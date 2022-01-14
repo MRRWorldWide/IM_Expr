@@ -37,32 +37,38 @@ def ICModel(data, init_set) -> int:
                         p_dictionary[d_index] = []
                     p_dictionary[d_index].append(data[active_set[s_index], d_index])
 
-        tmp = neighbor_set
         # 出口：不存在未激活可达点
         if len(neighbor_set) == 0:
             break
 
         # 计算未激活可达点的激活概率
-        neighbor_p_set = []
-        for index2 in range(len(neighbor_set)):
-            p_one = p_dictionary[neighbor_set[index2]]
-            p = 1.0
-            for i in range(len(p_one)):
-                p = p * (1 - p_one[i])
-            p = 1 - p
-            neighbor_p_set.append(p)
+        # neighbor_p_set = []
+        # for index2 in range(len(neighbor_set)):
+        #     p_one = p_dictionary[neighbor_set[index2]]
+        #     p = 1.0
+        #     for i in range(len(p_one)):
+        #         p = p * (1 - p_one[i])
+        #     p = 1 - p
+        #     neighbor_p_set.append(p)
 
         # 清空A集
         active_set = []
 
         # 激活
         for index3 in range(len(neighbor_set)):
-            seed = random.random()
-            if seed < neighbor_p_set[index3]:
-                active_status_set[neighbor_set[index3]] = 1
-                active_set.append(neighbor_set[index3])
+            p_this = p_dictionary[neighbor_set[index3]]
+            for p in p_this:
+                seed = random.random()
+                if seed < p:
+                    active_status_set[neighbor_set[index3]] = 1
+                    active_set.append(neighbor_set[index3])
+
+        # 如果没有新的节点被激活，传播停止
+        if len(active_set) == 0:
+            break
 
     # print(init_set, active_status_set)
+    # 传播结束返回传播的节点数
     return active_status_set.sum()
 
 
@@ -112,38 +118,3 @@ def test_rnd():
     print("7~8：", r67)
     print("8~9：", r78)
     print("9~10：", r910)
-
-
-if __name__ == "__main__":
-
-
-    # 读取图的关系矩阵
-    graph_data = np.loadtxt('graph.txt')
-
-    # 初始节点集
-    init_set = []
-
-    # 激活节点个数
-    spread_num = 0
-
-    print("**********贪心+IC@IM结果**********")
-
-    # （贪心算法）往S中加入新节点，使得每次加入后激活的节点数最多
-    # 当所有节点都被激活时停止循环
-    # f = open('result.txt', 'a')
-    while spread_num != len(graph_data):
-        max_spread_num = 0
-        for index in range(len(graph_data)):
-            if index not in init_set:
-                test_S = copy.deepcopy(init_set)
-                test_S.append(index)
-                result_spread_num = ICModel(graph_data, test_S)
-                if result_spread_num >= max_spread_num:
-                    max_spread_num = result_spread_num
-                    max_spread_node = index
-        spread_num = max_spread_num
-        init_set.append(max_spread_node)
-        print("init_num: ", len(init_set), " spread_num: ", max_spread_num, " S:", init_set)
-        # f.write("init_num: " + str(len(init_set)) + " spread_num: " + str(max_spread_num) + " S:" + str(init_set) + "\n")
-
-    # f.close()
