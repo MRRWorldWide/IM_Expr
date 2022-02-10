@@ -1,7 +1,7 @@
-
 import numpy as np
 import copy
 import ICmodel
+
 
 # 读取图的关系矩阵
 graph_data = np.loadtxt('graph.txt')

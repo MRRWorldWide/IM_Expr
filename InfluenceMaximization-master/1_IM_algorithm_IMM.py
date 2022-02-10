@@ -19,11 +19,13 @@ def get_RRS(G, p, l):                           #获取一个反向可达集
         A = [item for subset in B for item in subset] #新节点的邻居节点集合，转化为一个列表
         #print("A len:"+str(len(A)))
 
-        success = np.random.uniform(0, 1, len(A)) < p
+        success = np.random.uniform(0, 1, len(A)) < p  #np.random.uniform(x,y,size) x:下届，y:上届,size:输出样本数目
         #print(success)
         #print("success len:" + str(len(success)))
 
-        temp = list(np.extract(success, A))           #新节点以概率p随机激活邻居节点，每个节点只能激活一次
+        temp = list(np.extract(success, A))           #新节点以概率p随机激活邻居节点，每个节点只能激活一次，temp满足可达
+        # np.extract(condition, )返回满足某个条件的元素
+
         #print(temp)
         #print("temp len:" + str(len(temp)))
 
@@ -114,7 +116,7 @@ def get_mc(G, k, p, l, Rtemp):                #求对于网络G，IC模型下，
 
 if __name__ == '__main__':
     open('higgs-social_network_134574.txt').read()
-    G = Graph.Read_Edgelist('higgs-social_network_134574.txt', directed=True)
+    G = Graph.Read_Edgelist('higgs-social_network_134574.txt', directed=True) #按照边列表的形式读入文件，生成有向图
     L = len(G.vs)
 
     MC = []
